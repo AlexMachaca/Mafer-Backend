@@ -6,7 +6,7 @@ import { UpdateProductRequest } from './request/UpdateProductRequest.request';
 import { ProductService } from './product.service';
 import { CloudinaryService } from 'src/ServicesCloud/cloudinary/cloudinary.service';
 
-@Controller('product')
+@Controller('api/product')
 export class ProductController {
     constructor(private readonly productService: ProductService,   private cloudinaryService: CloudinaryService) {}
 
