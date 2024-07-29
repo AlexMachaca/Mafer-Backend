@@ -21,7 +21,11 @@ export class UpdateProductRequest {
     @IsNumber()
     Price?: number;
 
+    UrlImage: string;
+
     Visible: boolean;
+
+    Category:string;
 
     Stock: number;
 }

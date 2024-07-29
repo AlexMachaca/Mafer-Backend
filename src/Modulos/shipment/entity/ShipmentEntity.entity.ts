@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Shipment {
@@ -6,14 +6,13 @@ export class Shipment {
   IdShipment: number;
 
   @Column()
-  IdClient: string;
-
-  @ManyToOne(() => Sale, (sale) => sale.Shipments)
-  @JoinColumn({ name: 'saleId' })
-  Sale: Sale;
+  IdUser: number;
 
   @Column()
   Company: string;
+
+  @Column()
+  Region: string;
 
   @Column()
   Province: string;
@@ -23,4 +22,7 @@ export class Shipment {
 
   @Column()
   Address: string;
+
+  @Column()
+  DateAdd:Date;
 }
