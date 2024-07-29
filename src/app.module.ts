@@ -6,9 +6,19 @@ import { UserModule } from './modulos/user/user.module';
 import { ShipmentModule } from './modulos/shipment/shipment.module';
 import { SaleModule } from './modulos/sale/sale.module';
 import { CloudinaryService } from './ServicesCloud/cloudinary/cloudinary.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [ProductModule, UserModule, ShipmentModule, SaleModule],
+  imports: [TypeOrmModule.forRoot({
+    type: 'mysql',
+    host: 'localhost',
+    port: 3307,
+    username: 'root',
+    password: '',
+    database: 'db_mafer',
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: true
+}),ProductModule, UserModule, ShipmentModule, SaleModule],
   controllers: [],
   providers: [CloudinaryService],
 })
