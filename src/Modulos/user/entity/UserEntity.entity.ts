@@ -38,8 +38,8 @@ export class User {
   @Column()
   DateCreated: Date;
 
-  @OneToMany(() => ShoppingCart, (shoppingCart) => shoppingCart.User)
-  ShoppingCarts: ShoppingCart[];
+  /*@OneToMany(() => ShoppingCart, (shoppingCart) => shoppingCart.User)
+  ShoppingCarts: ShoppingCart[];*/
 
   @OneToMany(() => Sale, (sale) => sale.Client)
   Sales: Sale[];

@@ -7,9 +7,9 @@ export class ShoppingCart {
   @PrimaryGeneratedColumn()
   IdCart: number;
 
-  @ManyToOne(() => User, (user) => user.ShoppingCarts)
+  /*@ManyToOne(() => User, (user) => user.ShoppingCarts)
   @JoinColumn({ name: 'userId' })
-  User: User;
+  User: User;*/
 
   @Column('date')
   Date: string;
