@@ -5,16 +5,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entity/UserEntity.entity';
 import { Sale } from '../sale/entity/SaleEntity.entity';
+import { ValidateEmailSmsEntity } from './entity/ValidateEmialSms.entity';
 
 @Module({
-  imports: [
+  imports: [TypeOrmModule.forFeature([ValidateEmailSmsEntity]),
     MailerModule.forRoot(
       {
         transport: {
           service: 'gmail',
           auth:{
-            user: 'edsghotsolutions@gmail.com',
-            pass: 'utbrdntnpnttvumd'
+            user: 'jhedgost@gmail.com',
+            pass: 'sjtxhfmavbieznoh'
           }
         }
       }

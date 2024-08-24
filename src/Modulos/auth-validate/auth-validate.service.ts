@@ -13,6 +13,7 @@ import { User } from '../user/entity/UserEntity.entity';
 import { ResMessage } from '../sale/request/ResMessage.dto';
 import { ReqSuccessDto } from '../sale/request/reqSuccesDto.dto';
 import { ReqErrorDto } from '../sale/request/reqErrorDto.dto';
+import { ValidateEmailSmsEntity } from './entity/ValidateEmialSms.entity';
 
 @Injectable()
 export class AuthValidateService {
@@ -20,6 +21,8 @@ export class AuthValidateService {
       private readonly mailerService: MailerService,
       @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(ValidateEmailSmsEntity) 
+        private validateRepository: Repository<ValidateEmailSmsEntity>,
     ){
 }
 
@@ -476,6 +479,273 @@ export class AuthValidateService {
         )
         return res.resultOK("Se envio correctamente");
     }
+
+    async sendMail(email: string){
+      const userMail = await this.userRepository.findOne({ where: { Mail: email,Deleted:false } });
+  
+      if (userMail) {
+        return { msg: "Ya se registró un usuario con ese EMAIL", success: false, data: null };
+      }
+      var res = new ResMessage();
+
+      var code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      var existing = await this.validateRepository.findOne({
+          where: {Email:email}
+      })
+
+      if(existing != null){
+          await this.validateRepository.delete(existing);
+      }
+
+      var nuevo = new ValidateEmailSmsEntity();
+          nuevo.Email = email;
+          nuevo.Code = code;
+          const newValidate = this.validateRepository.create(nuevo)
+          await this.validateRepository.save(newValidate)
+
+      var nameEmail = this.obtenerNombreEmail(email);
+
+       await this.mailerService.sendMail(
+          {
+              to: email,
+              from: 'jhedgost@gmail.com',
+              subject: `Tu código de verificación es: ${code}`,
+              text: 'Welcome Agroindustrias Mafer',
+              html: ` <div
+  style="
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 0;
+  "
+>
+  <div
+    style="
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 20px;
+        background-color: #eff2f4;
+        border-bottom: 2px solid #f0f0f0;
+      "
+    >
+      <img
+        src="https://scontent.fcuz2-1.fna.fbcdn.net/v/t39.30808-6/453225652_122098852514446614_3798487310496189578_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeETJa3-PU2tlhpW02etEUcxjJJeoxVqpSWMkl6jFWqlJUSgxlpPnt3VFTQBE7MmQTSi0zoKI7DNQk4DusrvsWA4&_nc_ohc=GqeR4mWgmjoQ7kNvgHKE4_s&_nc_ht=scontent.fcuz2-1.fna&oh=00_AYDutvSCSbAhs_H-894s2oZOZ_nUdFqh7yUoGeuBUcU3zw&oe=66C87F51"
+        alt="Platzi Logo"
+        style="
+          margin-right: 10px;
+          width: 50px;
+          height: auto;
+          border-radius: 20%;
+        "
+      />
+      <h1 style="font-size: 24px; margin: 0; font-weight: bolder">
+        <span style="color: #10446f">JHED</span>
+        <span style="color: #1a7eb9">GOST</span>
+      </h1>
+    </div>
+    <div style="padding: 20px; text-align: justify">
+      <h2 style="font-size: 22px; color: #333333">
+        <span style="color: #1a7eb9">Hola, </span> ${nameEmail}
+      </h2>
+      <p style="font-size: 16px; color: #555555">
+        ✅ ¡Gracias por registrarte para obtener una cuenta en Agroindustrias Mafer! ⭐
+        Antes de comenzar, necesitamos confirmar tu identidad. Por favor, copia
+        el siguiente código e introdúcelo en la aplicación para verificar tu
+        dirección de correo electrónico: ⬇️🔑
+      </p>
+      <div
+        style="
+          background-color: #eff2f4;
+          padding: 5px;
+          border-radius: 8px;
+          margin-top: 10px;
+          text-align: center;
+          font-size: 24px;
+          font-weight: bold;
+          color: #333333;
+        "
+      >
+        <p>${code}</p>
+      </div>
+    </div>
+    <div
+      style="
+        text-align: center;
+        padding: 20px;
+        background-color: #27567d;
+        border-top: 2px solid #f0f0f0;
+      "
+    >
+      <p style="font-size: 14px; color: #fff; margin: 10px 0">
+        Nunca pares de aprender,<br />
+        Team JhedGost.
+      </p>
+      <img
+        src="https://scontent.fcuz2-1.fna.fbcdn.net/v/t39.30808-6/453225652_122098852514446614_3798487310496189578_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeETJa3-PU2tlhpW02etEUcxjJJeoxVqpSWMkl6jFWqlJUSgxlpPnt3VFTQBE7MmQTSi0zoKI7DNQk4DusrvsWA4&_nc_ohc=GqeR4mWgmjoQ7kNvgHKE4_s&_nc_ht=scontent.fcuz2-1.fna&oh=00_AYDutvSCSbAhs_H-894s2oZOZ_nUdFqh7yUoGeuBUcU3zw&oe=66C87F51"
+        alt="Platzi Logo"
+        style="
+          margin-top: 20px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+        "
+      />
+      <p style="font-size: 14px; color: #fff; margin: 10px 0">
+        Enviado por JHEDGOST Av. Manuel Olguin Nro. 325, Abancay, Perú 2024
+      </p>
+    </div>
+  </div>
+</div>
+`,
+          }
+      )
+      
+      return res.resultOK("Se envio correctamente");
+  }
+
+  async sendMailRecoverPassword(email: string){
+      var res = new ResMessage();
+
+      var code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      var existing = await this.validateRepository.findOne({
+          where: {Email:email}
+      })
+
+      if(existing != null){
+          await this.validateRepository.delete(existing);
+      }
+
+      var nuevo = new ValidateEmailSmsEntity();
+          nuevo.Email = email;
+          nuevo.Code = code;
+          const newValidate = this.validateRepository.create(nuevo)
+          await this.validateRepository.save(newValidate)
+
+      var nameEmail = this.obtenerNombreEmail(email);
+
+       await this.mailerService.sendMail(
+          {
+              to: email,
+              from: 'jhedgost@gmail.com',
+              subject: `Tu código de recuperación es: ${code}`,
+              text: 'Recuperacion de contraseña Agroindutrias Mafer',
+              html: ` <div
+  style="
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f4f4;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 0;
+  "
+>
+  <div
+    style="
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 20px;
+        background-color: #eff2f4;
+        border-bottom: 2px solid #f0f0f0;
+      "
+    >
+      <img
+        src="https://scontent.fcuz2-1.fna.fbcdn.net/v/t39.30808-6/453225652_122098852514446614_3798487310496189578_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeETJa3-PU2tlhpW02etEUcxjJJeoxVqpSWMkl6jFWqlJUSgxlpPnt3VFTQBE7MmQTSi0zoKI7DNQk4DusrvsWA4&_nc_ohc=GqeR4mWgmjoQ7kNvgHKE4_s&_nc_ht=scontent.fcuz2-1.fna&oh=00_AYDutvSCSbAhs_H-894s2oZOZ_nUdFqh7yUoGeuBUcU3zw&oe=66C87F51"
+        alt="Platzi Logo"
+        style="
+          margin-right: 10px;
+          width: 50px;
+          height: auto;
+          border-radius: 20%;
+        "
+      />
+      <h1 style="font-size: 24px; margin: 0; font-weight: bolder">
+        <span style="color: #10446f">JHED</span>
+        <span style="color: #1a7eb9">GOST</span>
+      </h1>
+    </div>
+    <div style="padding: 20px; text-align: justify">
+      <h2 style="font-size: 22px; color: #333333">
+        <span style="color: #1a7eb9">Hola, </span> ${this.obtenerNombreEmail(email)}
+      </h2>
+      <p style="font-size: 16px; color: #555555">
+        Le proporcionamos el código de verificación 🔒 para recuperar su
+        contraseña. Por favor, utilícelo en la aplicación correspondiente para
+        verificar su dirección de correo electrónico: ⬇️
+      </p>
+
+      <div
+        style="
+          background-color: #eff2f4;
+          padding: 5px;
+          border-radius: 8px;
+          margin-top: 10px;
+          text-align: center;
+          font-size: 24px;
+          font-weight: bold;
+          color: #333333;
+        "
+      >
+        <p>${code}</p>
+      </div>
+    </div>
+    <div
+      style="
+        text-align: center;
+        padding: 20px;
+        background-color: #27567d;
+        border-top: 2px solid #f0f0f0;
+      "
+    >
+      <p style="font-size: 14px; color: #fff; margin: 10px 0">
+        Nunca pares de aprender,<br />
+        Team JhedGost.
+      </p>
+      <img
+        src="https://scontent.fcuz2-1.fna.fbcdn.net/v/t39.30808-6/453225652_122098852514446614_3798487310496189578_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeETJa3-PU2tlhpW02etEUcxjJJeoxVqpSWMkl6jFWqlJUSgxlpPnt3VFTQBE7MmQTSi0zoKI7DNQk4DusrvsWA4&_nc_ohc=GqeR4mWgmjoQ7kNvgHKE4_s&_nc_ht=scontent.fcuz2-1.fna&oh=00_AYDutvSCSbAhs_H-894s2oZOZ_nUdFqh7yUoGeuBUcU3zw&oe=66C87F51"
+        alt="Platzi Logo"
+        style="
+          margin-top: 20px;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+        "
+      />
+      <p style="font-size: 14px; color: #fff; margin: 10px 0">
+        Enviado por JHEDGOST Av. Manuel Olguin Nro. 325, Abancay, Perú 2024
+      </p>
+    </div>
+  </div>
+</div>
+`,
+          }
+      )
+      
+      return res.resultOK("Se envio correctamente");
+  }
     obtenerNombreEmail(email: string){
         var name = '';
         for(var i= 0;i< email.length;i++){
