@@ -28,8 +28,8 @@ export class Product {
   @Column()
   Stock: number;
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.Product)
-  CartItems: CartItem[];
+  @Column()
+  Category: string;
 
   @Column({ default: true })
   Deleted: boolean;
