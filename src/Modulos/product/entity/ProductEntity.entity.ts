@@ -1,5 +1,4 @@
 import { CartItem } from "src/Modulos/cart/entity/CartItem.entity";
-import { SaleDetail } from "src/Modulos/sale/entity/SaleDetail.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
@@ -32,6 +31,6 @@ export class Product {
   @OneToMany(() => CartItem, (cartItem) => cartItem.Product)
   CartItems: CartItem[];
 
-  @OneToMany(() => SaleDetail, (saleDetail) => saleDetail.Product)
-  SaleDetails: SaleDetail[];
+  @Column({ default: true })
+  Deleted: boolean;
 }

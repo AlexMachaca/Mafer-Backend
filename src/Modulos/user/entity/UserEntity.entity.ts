@@ -1,5 +1,4 @@
 import { Cart } from "src/Modulos/cart/entity/CartEntity.entity";
-import { ShoppingCart } from "src/Modulos/product/entity/ShoppingCartEntity.entity";
 import { Sale } from "src/Modulos/sale/entity/SaleEntity.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -37,9 +36,6 @@ export class User {
 
   @Column()
   DateCreated: Date;
-
-  /*@OneToMany(() => ShoppingCart, (shoppingCart) => shoppingCart.User)
-  ShoppingCarts: ShoppingCart[];*/
 
   @OneToMany(() => Sale, (sale) => sale.Client)
   Sales: Sale[];
