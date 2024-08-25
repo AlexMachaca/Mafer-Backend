@@ -1,8 +1,15 @@
+import { Transform } from "class-transformer";
+import { IsBoolean } from "class-validator";
+
 export class CreateSaleRequest{
     IdUser: number;
     IdCart: number;
+    @IsBoolean()
+    @Transform(({ value }) => value === 'true' || value === true)
     ShippingMethod:boolean; //0:delivery   1:recojo
-    PaymentMethod:boolean; //0:Izzipay   1:QR
+    @IsBoolean()
+    @Transform(({ value }) => value === 'true' || value === true)
+    PaymentMethod:boolean; //0:yape   1:izzipay
     CardNumber:string;
     Total: number;
     idShipment:number;
